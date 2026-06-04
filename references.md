@@ -62,6 +62,11 @@
 - API Key: `as_sk_00352ba4783a1245875cf0e0a242aec2`
 - 支持垂直领域搜索（finance, academic, travel 等）
 
+### Tavily（网页搜索）
+- API Key: `tvly-dev-...`（dev tier，1000次/月免费）
+- 用途：网页搜索、内容提取
+- 配置位置：`/opt/data/.env`
+
 ### Gemini（待办）
 - 账号申诉中，待提供有效 API Key
 - 申诉通过后配置 `google` provider
