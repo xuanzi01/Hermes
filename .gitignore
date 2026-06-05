@@ -1,0 +1,30 @@
+# 敏感文件不推送
+.env
+.env.local
+*.log
+*.db
+*.db-shm
+*.db-wal
+
+# 缓存文件
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 本地临时文件
+tmp/
+temp/
+*.tmp
+
+# Docker 容器文件
+Dockerfile
+docker-compose.yml
+.venv/
+venv/
+
+# 日志和输出
+logs/
+cron/output/
+
+# 备份脚本（容器内路径，需要重写）
+scripts/hermes-auto-backup.sh

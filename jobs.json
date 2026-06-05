@@ -1,0 +1,94 @@
+{
+  "jobs": [
+    {
+      "id": "4a4fe31cc4a6",
+      "name": "hermes-auto-backup",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "hermes-auto-backup.sh",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/15 * * * *",
+        "display": "*/15 * * * *"
+      },
+      "schedule_display": "*/15 * * * *",
+      "repeat": {
+        "times": null,
+        "completed": 472
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-30T23:47:12.692685+00:00",
+      "next_run_at": "2026-06-05T06:15:00+00:00",
+      "last_run_at": "2026-06-05T06:00:26.461926+00:00",
+      "last_status": "error",
+      "last_error": "Script not found: /opt/data/scripts/hermes-auto-backup.sh",
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_6fc19f9f1073cd3b39a857f0c421fd02",
+        "chat_name": "oc_6fc19f9f1073cd3b39a857f0c421fd02",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "931ed2c4eb58",
+      "name": "\u6bcf\u65e5\u590d\u76d8-\u98de\u4e66\u6587\u6863",
+      "prompt": "\u4f60\u662f\u7487\u5b50\u7684 AI \u519b\u5e08 foxx\u3002\u6bcf\u5929\u665a 23:30 \u8fd0\u884c\u4e00\u6b21\uff0c\u751f\u6210\u4eca\u65e5\u5de5\u4f5c\u603b\u7ed3\u5e76\u4fdd\u5b58\u5230\u98de\u4e66\u6587\u6863\u3002\n\n## \u6267\u884c\u6b65\u9aa4\n\n### 1. \u4ece\u6570\u636e\u5e93\u8bfb\u53d6\u4eca\u65e5 session \u6570\u636e\n\u4ece /opt/data/state.db \u8bfb\u53d6\u4eca\u65e5\uff08date(started_at) = today's date\uff09\u6240\u6709 session \u7684\u6d88\u606f\u5185\u5bb9\u3002\n\n\u4eca\u65e5\u65e5\u671f\u901a\u8fc7 python3 \u7684 datetime \u83b7\u53d6\uff1a\n```python\nfrom datetime import date\ntoday = date.today().strftime('%Y-%m-%d')\n```\n\n\u7136\u540e\u67e5\u8be2 sessions \u548c messages \u8868\uff0c\u6c47\u603b\u4eca\u65e5\u6240\u6709\u5bf9\u8bdd\u5185\u5bb9\u3002\n\n### 2. \u751f\u6210\u590d\u76d8\u6587\u6863\u5185\u5bb9\n\n\u6839\u636e\u4eca\u65e5\u5bf9\u8bdd\u5185\u5bb9\uff0c\u751f\u6210\u4ee5\u4e0b\u7ed3\u6784\u7684\u4e2d\u6587\u590d\u76d8\u6587\u6863\uff1a\n\n```\n# \ud83c\udfaf {\u65e5\u671f} \u6bcf\u65e5\u590d\u76d8\n\n## \ud83d\udcca \u4eca\u65e5\u6982\u51b5\n- \u4eca\u65e5 session \u6570\n- \u4eca\u65e5\u603b\u6d88\u606f\u6570\n- \u4eca\u65e5 API \u8c03\u7528\u6570\n- \u4e3b\u8981\u5de5\u4f5c\u65b9\u5411\n\n## \ud83d\udca1 \u4eca\u65e5\u5b8c\u6210\u4e8b\u9879\n\u6309\u65f6\u95f4\u7ebf\u5217\u4e3e\u4eca\u65e5\u5b8c\u6210\u7684\u4e3b\u8981\u5de5\u4f5c\uff0c\u7528\u5217\u8868\u5f62\u5f0f\u3002\n\n## \ud83e\udd14 \u4eca\u65e5\u53cd\u601d\n\u5206\u6790\u4eca\u65e5\u5de5\u4f5c\u7684\u4eae\u70b9\u548c\u53ef\u6539\u8fdb\u4e4b\u5904\uff082-3 \u6761\uff09\u3002\n\n## \ud83d\udccb \u660e\u65e5\u89c4\u5212\n\u5217\u51fa\u660e\u65e5\u8ba1\u5212\u505a\u7684 3-5 \u4ef6\u4e8b\u3002\n\n## \ud83d\udcdd \u5173\u952e\u5bf9\u8bdd\u8bb0\u5f55\n\u8bb0\u5f55\u4eca\u65e5\u6709\u4ef7\u503c\u7684\u5bf9\u8bdd\u7247\u6bb5\u6216\u51b3\u7b56\u8981\u70b9\u3002\n```\n\n### 3. \u521b\u5efa\u98de\u4e66\u6587\u6863\u5e76\u5199\u5165\u5185\u5bb9\n\n\u4f7f\u7528 lark-cli \u521b\u5efa\u6587\u6863\uff0c\u5199\u5165\u77e5\u8bc6\u5e93\u7a7a\u95f4\uff08space_id: 7644558327271230430\uff09\uff1a\n- \u5148\u7528 `lark-cli wiki +node-create --space-id \"7644558327271230430\" --title \"\ud83c\udfaf {\u65e5\u671f} \u6bcf\u65e5\u590d\u76d8\" --obj-type docx` \u521b\u5efa\u6587\u6863\n- \u63d0\u53d6\u8fd4\u56de\u7684 obj_token \u4f5c\u4e3a document_id\n- \u7528 `lark-cli docs +update --doc \"$DOC_ID\" --command overwrite --content - --doc-format markdown --api-version v2` \u914d\u5408 heredoc \u5199\u5165\u5b8c\u6574 Markdown \u5185\u5bb9\n- \u6587\u6863\u94fe\u63a5\u683c\u5f0f\uff1ahttps://my.feishu.cn/docx/{obj_token}\n\n### 4. \u8fd4\u56de\u7ed3\u679c\n\n\u6700\u7ec8\u8f93\u51fa\uff1a\n- \u4e00\u6761\u6d88\u606f\uff0c\u5305\u542b\u6587\u6863\u94fe\u63a5\u548c\u4eca\u65e5\u590d\u76d8\u6458\u8981\uff083-5 \u53e5\u8bdd\u6982\u62ec\u4eca\u65e5\uff09\n- \u683c\u5f0f\u793a\u4f8b\uff1a\u300c\ud83d\udccb \u4eca\u65e5\u590d\u76d8\u5df2\u5b8c\u6210\uff1a[\u6587\u6863\u6807\u9898](\u94fe\u63a5\uff09\u300d\n\n## \u6ce8\u610f\u4e8b\u9879\n- lark-cli \u8def\u5f84\uff1a/opt/data/home/.local/share/npm-global/bin/lark-cli\n- \u6587\u6863\u6807\u9898\u5fc5\u987b\u5305\u542b\u65e5\u671f\uff08\u5982\u300c\ud83c\udfaf 2026-05-31 \u6bcf\u65e5\u590d\u76d8\u300d\uff09\n- \u5982\u679c\u4eca\u65e5\u6ca1\u6709 session \u6570\u636e\uff0c\u6587\u6863\u5185\u5bb9\u5199\u300c\u4eca\u65e5\u65e0\u5de5\u4f5c\u8bb0\u5f55\u300d\n- \u6570\u636e\u5e93\u8def\u5f84\uff1a/opt/data/state.db\n- \u4f7f\u7528 MiniMax \u6a21\u578b\u751f\u6210\u590d\u76d8\u5185\u5bb9\uff08--model minimax/M2.7\uff09",
+      "skills": [
+        "feishu-cli",
+        "session_search"
+      ],
+      "skill": "feishu-cli",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 15 * * *",
+        "display": "30 15 * * *"
+      },
+      "schedule_display": "30 15 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 4
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-31T15:09:35.788615+00:00",
+      "next_run_at": "2026-06-05T15:30:00+00:00",
+      "last_run_at": "2026-06-04T15:33:15.131613+00:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_6fc19f9f1073cd3b39a857f0c421fd02",
+        "chat_name": "oc_6fc19f9f1073cd3b39a857f0c421fd02",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    }
+  ],
+  "updated_at": "2026-06-05T06:00:26.463338+00:00"
+}

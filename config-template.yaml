@@ -1,0 +1,109 @@
+# Hermes Agent 配置模板
+# 使用前请复制到 ~/.hermes/config.yaml 并填入真实值
+# 敏感信息（API keys, tokens, secrets）必须放在 ~/.hermes/.env 中
+
+model:
+  default: "kimi-for-coding"
+  provider: "auto"
+  base_url: "https://openrouter.ai/api/v1"
+  # api_key 放在 .env 中，不要写在这里
+
+terminal:
+  backend: "local"
+  cwd: "."
+  timeout: 180
+  lifetime_seconds: 300
+
+browser:
+  inactivity_timeout: 120
+
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+  warn_after:
+    exact_failure: 2
+    same_tool_failure: 3
+    idempotent_no_progress: 2
+  hard_stop_after:
+    exact_failure: 5
+    same_tool_failure: 8
+    idempotent_no_progress: 5
+
+compression:
+  enabled: true
+  threshold: 0.50
+  target_ratio: 0.20
+  protect_last_n: 20
+  protect_first_n: 3
+
+prompt_caching:
+  cache_ttl: "5m"
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 2200
+  user_char_limit: 1375
+  nudge_interval: 10
+  flush_min_turns: 6
+
+session_reset:
+  mode: both
+  idle_minutes: 1440
+  at_hour: 4
+
+group_sessions_per_user: true
+
+streaming:
+  enabled: false
+
+skills:
+  creation_nudge_interval: 15
+
+agent:
+  max_turns: 60
+  verbose: false
+  reasoning_effort: "medium"
+  personalities:
+    kawaii: "You are a kawaii assistant! Use cute expressions like (◕‿◕)..."
+
+platform_toolsets:
+  cli: [hermes-cli]
+  telegram: [hermes-telegram]
+  discord: [hermes-discord]
+
+# =============================================================================
+# 平台配置（所有敏感 token/key 放在 .env 中）
+# =============================================================================
+platforms:
+  telegram:
+    enabled: true
+    token: ""  # TG_BOT_TOKEN in .env
+  discord:
+    enabled: true
+    token: ""  # DISCORD_BOT_TOKEN in .env
+  feishu:
+    enabled: true
+    extra:
+      app_id: ""    # FEISHU_APP_ID in .env
+      app_secret: "" # FEISHU_APP_SECRET in .env
+  weixin:
+    enabled: true
+    extra:
+      account_id: ""  # WEIXIN_ACCOUNT_ID in .env
+
+code_execution:
+  timeout: 300
+  max_tool_calls: 50
+
+delegation:
+  max_iterations: 50
+
+display:
+  compact: false
+  tool_progress: all
+  streaming: true
+  skin: default
+
+privacy:
+  redact_pii: false
