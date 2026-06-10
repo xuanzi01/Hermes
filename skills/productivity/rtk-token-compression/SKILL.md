@@ -34,94 +34,72 @@ curl -fsSL https://raw.githubusercontent.com/rtk/rtk/main/install.sh | bash
 ### Hermes Plugin (recommended — auto-intercepts all commands)
 
 ```bash
-# Must use absolute path since PATH may not include ~/.local/bin
+# Terminal/物理机部署（HERMES_HOME=~/.hermes）
 ~/.local/bin/rtk init -g --agent hermes
 
-# For Docker deployments with HERMES_HOME=/opt/data:
+# Docker/1Panel 部署（HERMES_HOME=/opt/data）
 /opt/data/home/.local/bin/rtk init -g --agent hermes
 ```
 
-The plugin installs to:
-- `/opt/data/plugins/rtk-rewrite` (plugin code)
-- `/opt/data/config.yaml` (Hermes config — plugin entry added)
+Plugin 安装后自动写入 `config.yaml` 的 `plugins.enabled`，无需手动配置。
 
 **Restart Hermes required** after plugin install.
 
-## Docker Deployment Path Mapping
+## 部署路径对照
 
-When `HERMES_HOME=/opt/data` (Docker/1Panel deployment):
-- Config: `/opt/data/config.yaml` (NOT `~/.hermes/config.yaml`)
-- RTK binary: `/opt/data/home/.local/bin/rtk`
-- Plugin dir: `/opt/data/plugins/rtk-rewrite`
+| 部署方式 | RTK 二进制路径 | Plugin 目录 | Config |
+|--------|--------------|------------|--------|
+| 终端/物理机（当前） | `/root/.hermes/home/.local/bin/rtk` | `/root/.hermes/plugins/rtk-rewrite` | `/root/.hermes/config.yaml` |
+| Docker/1Panel | `/opt/data/home/.local/bin/rtk` | `/opt/data/plugins/rtk-rewrite` | `/opt/data/config.yaml` |
 
-## Restart Domains (important)
-
-In Docker deployments, there are **two separate restart domains**:
+## Restart Domains (Docker部署需注意)
 
 | What | How | What restarts |
 |------|-----|---------------|
-| Gateway restart | `/restart` slash command | Platform handlers (Feishu, Telegram, etc.) — RTK plugin does NOT reload |
-| Full Hermes restart | 1Panel panel / systemctl | Sandbox execution environment + gateway — RTK plugin loads |
+| Gateway restart | `/restart` slash command | Platform handlers — RTK plugin **不**重载 |
+| Full Hermes restart | 1Panel panel / systemctl | Sandbox + gateway — RTK plugin 加载 |
 
-**Key:** RTK plugin requires a **full Hermes restart**, not just gateway restart. `/restart` won't activate the plugin.
+**Key:** RTK plugin 需要 **full Hermes restart**，`/restart`不会激活插件。
 
 ## Common Issues
 
-### "rtk: command not found" in Hermes terminal
+### "rtk: command not found" — Plugin Layer
 
-**Cause:** PATH in `.env` (`export PATH="/opt/data/home/.local/bin:$PATH"`) is read at Hermes startup but does NOT propagate to shell subprocesses spawned by the terminal tool.
+Plugin 的 `__init__.py` 硬编码了 RTK 二进制路径，必须与实际安装路径一致。
 
-**Solution:** Install RTK as Hermes plugin (`rtk init -g --agent hermes`) — bypasses PATH entirely by rewriting commands at the Hermes layer.
-
-### "rtk: command not found" — Plugin Layer (Docker PATH issue)
-
-Even after `rtk init -g --agent hermes` and full Hermes restart, the plugin fails with "rtk: command not found" because the plugin's `__init__.py` hardcodes `subprocess.run(["rtk", "rewrite", ...])` without an absolute path.
-
-**Diagnosis:**
+**诊断：**
 ```python
-# /opt/data/plugins/rtk-rewrite/__init__.py
-result = subprocess.run(["rtk", "rewrite", command], ...)  # "rtk" not in PATH for Hermes process
-_rtk_available = shutil.which("rtk") is not None  # also fails
+# /root/.hermes/plugins/rtk-rewrite/__init__.py（终端部署）
+# 或 /opt/data/plugins/rtk-rewrite/__init__.py（Docker 部署）
+_rtk_available = os.path.exists("<此处路径>")
 ```
 
-**Fix — patch the plugin directly (no restart needed):**
+**Fix — patch the plugin directly（无需重启，立即生效）：**
 
 ```python
-# Step 1: Add os import
-import os
+# Step 1: 确认 RTK 实际安装路径
+ls /root/.hermes/home/.local/bin/rtk  # 终端部署
+ls /opt/data/home/.local/bin/rtk       # Docker 部署
 
-# Step 2: Fix which() check
-_rtk_available = os.path.exists("/opt/data/home/.local/bin/rtk")
+# Step 2: Patch __init__.py（两处路径必须同时改）
+# 改1: _check_rtk() 中的路径判断
+_rtk_available = os.path.exists("/root/.hermes/home/.local/bin/rtk")
 
-# Step 3: Fix subprocess call
-result = subprocess.run(
-    ["/opt/data/home/.local/bin/rtk", "rewrite", command],
-    shell=False,
-    timeout=2,
-    capture_output=True,
-    text=True,
-)
+# 改2: subprocess.run() 中的调用路径
+["/root/.hermes/home/.local/bin/rtk", "rewrite", command],
 ```
 
-File: `/opt/data/plugins/rtk-rewrite/__init__.py`
+File: `/root/.hermes/plugins/rtk-rewrite/__init__.py`（终端部署）
 
-**Why no restart needed:** The plugin is re-imported from disk on every command. The patched code takes effect on the next terminal command.
-
-### No Docker/systemd access to restart
-
-**Cause:** Running in sandbox container without Docker socket or systemd.
-
-**Solution:** Use 1Panel panel restart, or ask user to send `/restart` from a gateway-connected platform (but note this only restarts gateway, not the plugin).
+**Why no restart needed:** 插件每次命令执行时从磁盘重新导入，patch 后下一条命令立即生效。
 
 ## Verification
 
-After full Hermes restart:
 ```bash
+# 确认 Hook 注册成功（插件加载时会输出一行 warn 日志，第一次执行终端命令后可在 Hermes 日志中确认）
 git status
-# Output should be compressed (fewer lines, token-efficient format)
+# 输出被压缩则插件工作正常
 ```
-
-With plugin active, RTK shows no "No hook installed" warning.
 
 ## Reference
 
